@@ -244,6 +244,21 @@ function getTotalPoint(memberId) {
 }
 
 /**
+ * <画面から>
+ * 現在の利用可能ポイントを取得する
+ */
+function getAvailablePoint(memberId) {
+  var sheet = getResultSheet();
+  var range = sheet.getRange(2, 1, sheet.getLastRow() - 1, 3).getValues();
+  for (var i = 0; i < range.length; i++) {
+    if (range[i][0] == memberId) {
+      return range[i][2];
+    }
+  }
+  return 0;
+}
+
+/**
  * <トリガーから>
  * 月次集計処理
  */

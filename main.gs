@@ -311,7 +311,7 @@ function monthlyCalc() {
         Logger.log("result" + resultRange[j]);
         Logger.log("j: " + j);
         var total = pointList[i][1] + resultRange[j][1];
-        resultSheet.getRange(j + 2, 4, 1, 1).setValues([[total]]);
+        resultSheet.getRange(+j + 2, 4, 1, 1).setValues([[total]]);
         f = false;
         break;
       }

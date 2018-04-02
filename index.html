@@ -15,7 +15,7 @@
           <h1>Thanks giving</h1>
         </div>
         <div class="col-6 text-right">
-          <?=getMyNickName()?>さん、こんにちは♪<br>これまでに獲得したポイントは<?=getTotalPoint(getMemberId())?>Pです♪
+          <?= nickname ?>さん、こんにちは♪<br>これまでに獲得したポイントは<?=getTotalPoint(memberId)?>Pです♪
         </div>
       </header>
     </div>
@@ -27,7 +27,8 @@
         <p>
           <input type="text" name="point" size="30" maxlength="20" placeholder="100">ポイントの
         </p>
-        <input type="hidden" name="memberId" value="<?=getMemberId()?>">
+        <input type="hidden" name="memberId" value="<?= memberId ?>">
+        <input type="hidden" name="nickname" value="<?= nickname ?>">
         <!-- Button trigger modal -->
         <button id="giving" type="button" class="btn btn-primary">
           ありがとう♪

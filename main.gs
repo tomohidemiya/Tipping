@@ -1,12 +1,5 @@
 /**
  * ※1行目がヘッダ、2行目からデータとしてやってます
- * ・[全体メンバマスタ]シート
- * A1 : [ID]
- * B1 : [あだ名]
- * C1 : [メールアドレス]
- * D1 : [バックアップ参加](0:未参加、1:参加中)
- * E1 : [メンターグループ]
- *
  * ・[メンバーマスタ]シート
  * A1 : [ID]
  * B1 : [あだ名]
@@ -24,43 +17,15 @@
  */
 
 /**
- * <画面から>
- * 初期画面を取得する
- */
-function doGet() {
-  // 初期表示用の画面を返却する
-  if (validateMailAddresses()) {
-    var html = HtmlService.createTemplateFromFile('index');
-    html.memberId = getMemberId();
-    return html.evaluate();
-  } else {
-    return HtmlService.createTemplateFromFile('error').evaluate();
-  }
-}
-
-/**
- * メンバマスタのスプレッドシートを取得する
- */
-function getMasterSheet(sheetName) {
-  var id = "☆全体メンバー管理用のスプレッドシートID☆";// ※実際につなぐスプレッドシートのIDを設定
-  var spreadSheet = SpreadsheetApp.openById(id);
-  return spreadSheet.getSheetByName(sheetName);
-}
-
-/**
  * 投げ銭のスプレッドシートを取得する
  */
 function getThanksGivingSheet(sheetName) {
-  var id = "☆投げ銭用のスプレッドシートID☆";// ※実際につなぐスプレッドシートのIDを設定
-  var spreadSheet = SpreadsheetApp.openById(id);
-  return spreadSheet.getSheetByName(sheetName);
+  return getThanksGivingSpreadSheet().getSheetByName(sheetName);
 }
 
-/**
- * 『全体メンバマスタ』のシート情報を取得する
- */
-function getMasterMemberSheet() {
-  return getMasterSheet("全体メンバマスタ");
+function getThanksGivingSpreadSheet() {
+  var id = "☆投げ銭用のスプレッドシートID☆";// ※実際につなぐスプレッドシートのIDを設定
+  return SpreadsheetApp.openById(id);
 }
 
 /**
@@ -78,32 +43,63 @@ function getLogSheet() {
 }
 
 /**
+ * <画面から>
+ * 初期画面を取得する
+ */
+function doGet() {
+  // 初期表示用の画面を返却する
+  var result = validateMailAddresses();
+  if (result.auth) {
+    // 初期表示用処理
+    init(result);
+
+    // 画面用に値を設定して画面表示
+    var html = HtmlService.createTemplateFromFile('index');
+    html.memberId = result.id;
+    html.nickname = result.nickname;
+    return html.evaluate();
+  } else {
+    return HtmlService.createTemplateFromFile('error').evaluate();
+  }
+}
+
+function init(result) {
+  if (getResultSheet().getLastRow() < 2) {
+    // 登録情報がなければ登録
+    appendNewMember(result.id, result.nickname);
+  }
+  var sheet = getResultSheet();
+  var members = sheet.getRange(2, 1, sheet.getLastRow() - 1, 2).getValues();
+  for (var i = 0; i < members.length; i++) {
+    if (members[i][0] == result.id) {
+      return;
+    }
+    if (members[i][1] == result.nickname) {
+      // IDが設定なければ更新する
+      sheet.getRange(i + 2, 1, 1, 1).setValues([[result.id]]);
+      return;
+    }
+  }
+  appendNewMember(result.id, result.nickname);
+}
+
+function getDefaultPoint() {
+  return 1000;
+}
+
+/**
+ * 新規追加分処理
+ */
+function appendNewMember(id, nickname) {
+  var sheet = getResultSheet();
+  sheet.appendRow([id, nickname, getDefaultPoint(), 0]);
+}
+
+/**
  * アクセスしているユーザのメールアドレスを取得
  */
 function getMailAddress() {
   return Session.getActiveUser().getEmail();
-}
-
-function getMemberId() {
-  var masterSheet = getMasterMemberSheet();
-  var members = masterSheet.getRange(2, 1, masterSheet.getLastRow() - 1, 3).getValues();
-  for(var i = 0; i < members.length; i++) {
-    if (members[i][2] != "" && members[i][2] == getMailAddress()) {
-      return members[i][0];
-    }
-  }
-  return "";
-}
-
-function getMyNickName() {
-  var masterSheet = getMasterMemberSheet();
-  var mailAddresses = masterSheet.getRange(2, 2, masterSheet.getLastRow() - 1, 2).getValues();
-  for(var i = 0; i < mailAddresses.length; i++) {
-    if (mailAddresses[i][1] != "" && mailAddresses[i][1] == getMailAddress()) {
-      return mailAddresses[i][0];
-    }
-  }
-  return getMailAddress();
 }
 
 /**
@@ -111,14 +107,23 @@ function getMyNickName() {
  */
 function validateMailAddresses()
 {
-  var masterSheet = getMasterMemberSheet();
-  var mailAddresses = masterSheet.getRange(2, 3, masterSheet.getLastRow() - 1, 2).getValues();
-  for(var i = 0; i < mailAddresses.length; i++) {
-    if (mailAddresses[i][0] == getMailAddress()) {
-      return mailAddresses[i][1] == 1; 
-    }
+  // POSTデータ
+  var payload = {
+    "auth_type" : "owners_club",
+    "email" : getMailAddress()
   }
-  return false;
+  // POSTオプション
+  var options = {
+    method : "POST",
+    payload : payload,
+    muteHttpExceptions: true
+  }
+  // アクセス先
+  var url = "https://script.google.com/macros/s/AKfycbwSTvj_jXyhgGFxTF1E-X5dCxODB7IrDxiOUkbTGTr3sL9ueco/exec"
+  // POSTリクエスト
+  var response = UrlFetchApp.fetch(url, options);
+  var result = JSON.parse(response);
+  return result;
 }
 
 /**
@@ -130,10 +135,10 @@ function getMyData(form) {
   for (var i = 0; i < range.length; i++) {
     if (range[i][0] == form.memberId) {
       var row = i + 2;
-      return {memberId: range[i][0], point: range[i][2], totalPoint: range[i][3], row: row};
+      return {memberId: range[i][0], nickname: range[i][1], point: range[i][2], totalPoint: range[i][3], row: row};
     }
   }
-  return {memberId: "", point: 0, totalPoint: 0, row: 0};
+  return {memberId: "", nickname: "", point: 0, totalPoint: 0, row: 0};
   
 }
 
@@ -149,45 +154,47 @@ function doPost(form) {
   // 登録を行う
   var sheet = getLogSheet();
   var myData = getMyData(form);
+  // 所持ポイント以内であること
   if (myData.point < form.point) {
     return {result: "ERROR", message: "ポイントが不足しています。"};
   }
+  // 自分への投票でないこと
   if (!isAvailablePayment(myData, form)) {
     return {result: "ERROR", message: "自分には投票できません。"};
   }
-  var masterSheet = getResultSheet();
-  masterSheet.getRange(myData.row, 3, 1, 1).setValues([[myData.point - form.point]]);
   if (isValidName(form.name)) {
-    sheet.appendRow([getMyNickName(), form.name, form.point, new Date()]);
-    return {result: "SUCCESS"};
+    sheet.appendRow([form.nickname, form.name, form.point, new Date()]);
+    updatePoint(myData, form.point);
+    return {result: "SUCCESS", message: "投票しました☆"};
   }
   var name = transName(form.name);
   if (name == form.name) {
-    sheet.appendRow([getMyNickName(), form.name, form.point, new Date(), "x"]);
+    sheet.appendRow([form.nickname, form.name, form.point, new Date(), "x"]);
   } else {
-    sheet.appendRow([getMyNickName(), name, form.point, new Date()]);
+    sheet.appendRow([form.nickname, name, form.point, new Date()]);
   }
-  return {result: "SUCCESS"};
+  updatePoint(myData, form.point);
+  return {result: "SUCCESS", message: "投票しました☆"};
 }
 
 /**
- * 投票可能かをチェック
- * 1. 所持ポイント以内であること
- * 2. 自分への投票でないこと
+ * 利用ポイント分を更新する
+ */
+function updatePoint(myData, point) {
+  var sheet = getResultSheet();
+  sheet.getRange(myData.row, 3, 1, 1).setValues([[myData.point - point]]);
+}
+
+/**
+ * 自分への投票かをチェック
  */
 function isAvailablePayment(myData, form) {
-  var resultSheet = getResultSheet();
-  var masters = resultSheet.getRange(2, 1, resultSheet.getLastRow() - 1, 2).getValues();
-  var masterName;
-  for (var i = 0; i < masters.length; i++) {
-    if (masters[i][0] == form.memberId && masters[i][1] == form.name) {
-      return false;
-    } else if (masters[i][0] == form.memberId) {
-      masterName = masters[i][0];
-    }
+  var myName = myData.nickname;
+  if (myName == form.name) {
+    return false;
   }
   var tmpName = transName(form.name);
-  if (tmpName == masterName) {
+  if (tmpName == myName) {
     return false;
   } 
   return true;
@@ -263,53 +270,73 @@ function getAvailablePoint(memberId) {
  */
 function monthlyCalc() {
   var resultSheet = getResultSheet();
-  var resultRange = resultSheet.getRange(2, 1, resultSheet.getLastRow() - 1, 2).getValues();
-  // 全てメンバーを取得する
-  var allMembers = getAllMemberList();
-  // 登録されていないメンバーの項目を作成
-  var exist = false;
-  for (var i = 0; i < allMembers.length; i++) {
-    exist = false;
-    for (var j = 0; j < resultRange.length; j++) {
-      if (allMembers[i][0] == resultRange[j][0]) {
-        if (allMembers[i][1] != resultRange[j][1]) {
-          // あだ名が変わってたら新しいのに変える
-          resultSheet.getRange(j + 2, 2, 1, 1).setValues([[allMembers[i][1]]]);
+  // 月次処理を行う
+  if (resultSheet.getLastRow() > 1) {
+    var resultRange = resultSheet.getRange(2, 1, resultSheet.getLastRow() - 1, 2).getValues();
+    // 0. 全ての使用可能ポイントをゼロする
+    for (var i = 0; i < resultRange.length; i++) {
+      resultSheet.getRange(i + 2, 3, 1, 1).setValues([[0]]);
+    }
+  }
+  // 1. ログから投票先ごとに集計する
+  var logSheet = getLogSheet();
+  if (logSheet.getLastRow() > 1) {
+    var logRange = logSheet.getRange(2, 2, logSheet.getLastRow() - 1, 2).getValues();
+    var pointList = [];
+    for (i in logRange) {
+      var f = true;
+      for (j in pointList) {
+        if (pointList[j][0] == logRange[i][0]) {
+          pointList[j][1] = pointList[j][1] + logRange[i][1];
+          f = false;
+          break;
         }
-        exist = true;
+      }
+      if (f) {
+        pointList[pointList.length] = [];
+        pointList[pointList.length - 1][0] = logRange[i][0];
+        pointList[pointList.length - 1][1] = logRange[i][1];
+      }
+    }
+  }
+  Logger.log(pointList);
+  // 2.集計後マスタの累積に加算する
+  // 加算先がなければ行を追加する
+  var resultRange = resultSheet.getRange(2, 2, resultSheet.getLastRow() - 1, 3).getValues();
+  for (i in pointList) {
+    Logger.log("point" + pointList[i]);
+    var f = true;
+    for (j in resultRange) {
+      if (pointList[i][0] == resultRange[j][0]) {
+        Logger.log("result" + resultRange[j]);
+        Logger.log("j: " + j);
+        var total = pointList[i][1] + resultRange[j][1];
+        resultSheet.getRange(+j + 2, 4, 1, 1).setValues([[total]]);
+        f = false;
         break;
       }
     }
-    if (!exist) {
-      resultSheet.appendRow([allMembers[i][0], allMembers[i][1]]);
+    if (f) {
+      resultSheet.appendRow(["", pointList[i][0], 0, pointList[i][1]]);
     }
   }
-  // 月次処理を行う
-  resultRange = resultSheet.getRange(2, 1, resultSheet.getLastRow() - 1, 2).getValues();
-  var logSheet = getLogSheet();
-  // 0. 全ての使用可能ポイントをゼロする
-  for (var i = 0; i < resultRange.length; i++) {
-    resultSheet.getRange(i + 2, 3, 1, 1).setValues([[0]]);
-  }
-  // 1. ログから各人の累計ポイントを計算する
-  var logRange = logSheet.getRange(2, 2, logSheet.getLastRow() - 1, 2).getValues();
-  for (var i = 0; i < resultRange.length; i++) {
-    var totalPoint = 0;
-    var tmpName = resultRange[i][1];
-    for (var j = 0; j < logRange.length; j++) {
-      if (logRange[j][0] == tmpName) {
-        totalPoint += logRange[j][1];
-      }
-    }
-    resultSheet.getRange(i + 2, 4, 1, 1).setValues([[totalPoint]]);
-  }
-  // 2. 全ての使用可能ポイントをリセットする
-  for (var i = 0; i < resultRange.length; i++) {
-    resultSheet.getRange(i + 2, 3, 1, 1).setValues([[1000]]);
+  // 3. ログシートを切り替える
+  makeNewLogSheet();
+  // 4. 使用可能ポイントをリセットする
+  for (var i = 0; i < resultSheet.getLastRow() - 1; i++) {
+    resultSheet.getRange(i + 2, 3, 1, 1).setValues([[getDefaultPoint()]]);
   }
 }
 
-function getAllMemberList() {
-  var masterSheet = getMasterMemberSheet();
-  return masterSheet.getRange(2, 1, masterSheet.getLastRow() - 1, 2).getValues();
+function makeNewLogSheet() {
+  // 集計済みデータをリネームする
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = d.getMonth();
+  var d = d.getDate();
+  date = new Date(y, m - 1, d);
+  getLogSheet().setName("投票ログ_" + Utilities.formatDate( date, 'Asia/Tokyo', 'yyyyMM'));
+  // 新しいログシートを作成する
+  getThanksGivingSpreadSheet().insertSheet("投票ログ");
+  getLogSheet().appendRow(["投票元", "投票先", "投票ポイント", "投票時刻", "あだ名チェックエラー"]);
 }

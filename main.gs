@@ -65,7 +65,12 @@ function doGet() {
 
     return output;
   } else {
-    return HtmlService.createTemplateFromFile('error').evaluate();
+    var output = HtmlService.createTemplateFromFile('error').evaluate();
+    output.addMetaTag('viewport', 'width=device-width, initial-scale=1');
+    output.setTitle('Thanks giving');
+    output.setFaviconUrl('http://flat-icon-design.com/f/f_object_90/s256_f_object_90_0bg.png');
+
+    return output;
   }
 }
 

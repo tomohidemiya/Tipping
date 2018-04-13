@@ -7,7 +7,7 @@
  * D1 : [累計ポイント]
  * E1 : [受取済チケット]
  * F1 : [あだ名チェック用、入力ミスとかのをいれるとこ]
- * 
+ *
  * ・[投票ログ]シート
  * A1 : [投票元(メールアドレス)]
  * B1 : [投票先(あだ名)]
@@ -57,7 +57,12 @@ function doGet() {
     var html = HtmlService.createTemplateFromFile('index');
     html.memberId = result.id;
     html.nickname = result.nickname;
-    return html.evaluate();
+
+    var output = html.evaluate();
+    output.addMetaTag('viewport', 'width=device-width, initial-scale=1');
+    output.setTitle('Thanks Giving');
+
+    return output;
   } else {
     return HtmlService.createTemplateFromFile('error').evaluate();
   }
@@ -139,7 +144,7 @@ function getMyData(form) {
     }
   }
   return {memberId: "", nickname: "", point: 0, totalPoint: 0, row: 0};
-  
+
 }
 
 /**
@@ -196,7 +201,7 @@ function isAvailablePayment(myData, form) {
   var tmpName = transName(form.name);
   if (tmpName == myName) {
     return false;
-  } 
+  }
   return true;
 }
 

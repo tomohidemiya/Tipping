@@ -4,58 +4,74 @@
   <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <?!= HtmlService.createHtmlOutputFromFile("css").getContent(); ?>
   </head>
 
   <body>
 
+
     <div class="container">
       <header class="row">
-        <div class="col-6">
+        <div class="col-12 col-md-6">
           <h1>Thanks giving</h1>
         </div>
-        <div class="col-6 text-right">
-          <?= nickname ?>さん、こんにちは♪<br>これまでに獲得したポイントは<?=getTotalPoint(memberId)?>Pです♪
+        <div class="col-12 col-md-6 text-right-md">
+          <?= nickname ?>さん、こんにちは♪<br>これまでに獲得したポイントは<?=getTotalPoint(memberId)?>Pです♪<br>現在ご利用できるポイントは、<?=getAvailablePoint(memberId)?>Pです♪
         </div>
       </header>
     </div>
-    <div class="container">
-      <form action="" method=post id="form1">
-        <p>
-          <input type="text" name="name" size="30" maxlength="20" placeholder="キンクリ">さんに
-        </p>
-        <p>
-          <input type="text" name="point" size="30" maxlength="20" placeholder="100">ポイントの
-        </p>
-        <input type="hidden" name="memberId" value="<?= memberId ?>">
-        <input type="hidden" name="nickname" value="<?= nickname ?>">
-        <!-- Button trigger modal -->
-        <button id="giving" type="button" class="btn btn-primary">
-          ありがとう♪
-        </button>
-      </form>
-      <img src="http://www.fs-cosmos.com/_p/1990/images/pc/44d994cc.png" alt="">
-      <div class=footer>
-      　　Thanks giving
-      </div>
-      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">
-                送信しました（*^_^*）
-              </h5>
-              <button type="button" name="btn" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+    <div class="container sm-bg-image" style="margin-top:10px">
+      <div class="layout-transparent">
+        <form action="" method=post id="form1">
+          <div class="row">
+            <div class="col-12">
+              <p>
+                <input type="text" name="name" size="20" maxlength="15" placeholder="XXX"><label for="name">さんに</label>
+              </p>
+            </div>
+            <div class="col-12">
+              <p>
+                <input type="text" name="point" size="20" maxlength="4" placeholder="100">ポイントの
+              </p>
+              <input type="hidden" name="memberId" value="<?= memberId ?>">
+              <input type="hidden" name="nickname" value="<?= nickname ?>">
+            </div>
+          </div>
+
+          <!-- Button trigger modal -->
+          <div class="row">
+            <div class="col-12 col-sm-9">
+              <button id="giving" type="button" class="btn btn-primary">
+                ありがとう♪
               </button>
             </div>
-            <div class="modal-body"　id="modal-body">
-              ...
+            <div class="col-sm-3 lg-sm-only">
+              <img src="http://www.fs-cosmos.com/_p/1990/images/pc/44d994cc.png" alt="" style="margin-top: -40px">
             </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <footer class=footer style="padding-right: 15px">
+      Thanks giving
+    </footer>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              送信しました（*^_^*）
+            </h5>
+            <button type="button" name="btn" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="modal-body">
+            感謝！！！
           </div>
         </div>
       </div>
-
     </div>
     <?!= HtmlService.createHtmlOutputFromFile("js").getContent(); ?>
   </body>

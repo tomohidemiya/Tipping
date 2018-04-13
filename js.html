@@ -6,7 +6,7 @@
 <script>
   $(function(){
     $("#giving").on('click',function(e){
-      google.script.run.withSuccessHandler(update).withFailureHandler(error).doPost(this.parentNode);
+      google.script.run.withSuccessHandler(update).withFailureHandler(error).doPost($('#form1')[0]);
     });
   });
   var error = function (response) {
@@ -16,11 +16,11 @@
   var update = function (response) {
     console.log(response)
     if (response.result === 'SUCCESS') {
-    　　　　$('#exampleModalLabel').text('送信しました（*^_^*）');
+      $('#exampleModalLabel').text('送信しました（*^_^*）');
       $('#modal-body').text('感謝！！！');
     } else {
       $('#exampleModalLabel').text('送信に失敗しました...(>_<)');
-　　　　　　　　　　　　if (response.hasOwnProperty('message')) {
+      if (response.hasOwnProperty('message')) {
         $('#modal-body').text(response.message);
       } else {
         $('#modal-body').text('不明なエラーが発生しました。。');

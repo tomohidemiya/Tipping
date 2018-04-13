@@ -1,42 +1,77 @@
+<link href="https://fonts.googleapis.com/css?family=Parisienne" rel="stylesheet">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <style>
-#form1 > input {
+  #form1 {
+    margin-right: 15px;
+    margin-left: 15px;
+  }
+  #form1 > input {
 
-}
-.btn {
+  }
+  .btn {
 
-}
+  }
 
-.btn.btn-primary {
-  font-size: 29px;
-}
+  .btn.btn-primary {
+    font-size: 29px;
+  }
 
-img{
-  width:150px;
-  float:right;
+  img{
+    width:150px;
+    // float:right;
 
-  position:relative;
-  top:-100px;
-}
+    // position:relative;
+    // top:-100px;
+  }
 
-input
-{
-  border:2px black solid;
-}
+  input
+  {
+    border:2px black solid;
+  }
 
-h1{
-  font-family: 'Dancing Script', cursive;
-}
+  h1{
+    font-family: 'Parisienne', cursive;
+  }
 
 
-div.footer{
-  background-color: black;
-  color:cornsilk;
-  margin-top: 1rem;
-  margin-left: 85px;
-  margin-right: 85px;
-  font-family: 'Dancing Script', cursive;
-  text-align: right;
-}
+  .footer{
+    background-color: black;
+    color:cornsilk;
+    margin-top: 1rem;
+    margin-left: 5%;
+    margin-right: 5%;
+    font-family: 'Parisienne', cursive;
+    text-align: right;
+  }
+
+  @media (min-width: 768px) {
+    .text-right-md {
+      text-align: right !important;
+    }
+    .layout-transparent {
+      background-color: rgb(255,255,255);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .lg-sm-only {
+      display:none;
+    }
+    .layout-transparent {
+      background-color: rgba(255,255,255,0.5);
+    }
+  }
+
+  .sm-bg-image {
+    background-image: url(http://www.fs-cosmos.com/_p/1990/images/pc/44d994cc.png);
+    background-repeat: no-repeat;
+    background-position: top center;
+    -moz-background-size: cover;
+    background-size: cover;
+  }
+  .container.sm-bg-image {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
 </style>
-

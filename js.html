@@ -1,0 +1,32 @@
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<script>
+  $(function(){
+    $("#giving").on('click',function(e){
+      google.script.run.withSuccessHandler(update).withFailureHandler(error).doPost($('#form1')[0]);
+    });
+  });
+  var error = function (response) {
+    // 表示ダイアログの表示
+    alert('データの送信に失敗しました。。\nインターネットの接続がいい場所で、もう一度お試しください！');
+  }
+  var update = function (response) {
+    console.log(response)
+    if (response.result === 'SUCCESS') {
+      $('#exampleModalLabel').text('送信しました（*^_^*）');
+      $('#modal-body').text('感謝！！！');
+    } else {
+      $('#exampleModalLabel').text('送信に失敗しました...(>_<)');
+      if (response.hasOwnProperty('message')) {
+        $('#modal-body').text(response.message);
+      } else {
+        $('#modal-body').text('不明なエラーが発生しました。。');
+      }
+    }
+
+    $('#exampleModal').modal();
+  }
+</script>

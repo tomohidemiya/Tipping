@@ -63,7 +63,7 @@
   }
 
   .sm-bg-image {
-    background-image: url(http://www.fs-cosmos.com/_p/1990/images/pc/44d994cc.png);
+    background-image: url(https://drive.google.com/uc?export=view&id=1uchrxxPkdXHKjESC385ctBJ2sGRjAUaU);
     background-repeat: no-repeat;
     background-position: top center;
     -moz-background-size: cover;
@@ -72,6 +72,53 @@
   .container.sm-bg-image {
     padding-right: 0;
     padding-left: 0;
+  }
+
+
+  .spinner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1049;
+
+    width: 40px;
+    height: 40px;
+    margin: 100px auto;
+    background-color: #fff;
+
+    border-radius: 100%;
+    -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
+    animation: sk-scaleout 1.0s infinite ease-in-out;
+  }
+  .spinner__title {
+    z-index: 1049;
+
+    width: 80px;
+    height: 140%;
+    margin: 140px auto;
+    color: #eee;
+    opacity: 1;
+  }
+
+  @-webkit-keyframes sk-scaleout {
+    0% { -webkit-transform: scale(0) }
+    100% {
+      -webkit-transform: scale(1.0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes sk-scaleout {
+    0% {
+      -webkit-transform: scale(0);
+      transform: scale(0);
+    } 100% {
+      -webkit-transform: scale(1.0);
+      transform: scale(1.0);
+      opacity: 0;
+    }
   }
 
 </style>

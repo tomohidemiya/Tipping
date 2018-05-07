@@ -9,7 +9,7 @@
     // ありがとう♪ボタン押下時の挙動
     $("#giving").on('click',function(e){
       $('#exampleModalLabel').text('感謝を送る前の確認♪');
-      $('#modal-body').html('下記の内容で送っても良いですか？( ´ ▽ ` )ﾉ <br> ・ 送る相手: ' + $('input[name="name"]').val() + '<br> ・ 送るポイント: ' + $('input[name="point"]').val()) + 'ポイント';
+      $('#modal-body').html('下記の内容で送っても良いですか？( ´ ▽ ` )ﾉ <br> ・ 送る相手: ' + $('input[name="name"]').val() + '<br> ・ 送るポイント: ' + $('input[name="point"]').val() + 'ポイント');
       $("#modal-footer").css('display', 'block');
       $('#exampleModal').modal();
     });
@@ -24,7 +24,7 @@
       $("#spinner").addClass('show');
       $("#giving").attr('disabled', 'disabled');
 
-      // ポイントを一時退避
+      // ポイントを一時退避して、、、
       point = $('input[name="point"]').val();
 
       // 通信開始ー！！
@@ -73,6 +73,7 @@
     // モーダルをあげるぜ！
     $('#exampleModal').modal();
 
+    // finalize処理
     point = -1
   }
 </script>

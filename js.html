@@ -58,7 +58,7 @@
       $('#modal-body').text('感謝、送りました(*^_^*)');
       $("#modal-footer").css('display', 'none');
       $('#current-point').text(Number($('#current-point').text()) - point);
-      $('input[type="text"]').val('');
+      $('input[type!="hidden"]').val('');
     } else {
       $('#exampleModalLabel').text('送信に失敗しました...(>_<)');
       if (response.hasOwnProperty('message')) {
@@ -85,14 +85,13 @@
     jqForm.attr('novalidate', null);
     var f = jqForm[0];
     if(!f.checkValidity()) {
-      var inputs = $('input[type="text"]');
+      var inputs = $('input[type!="hidden"]');
       for (var i = 0; i < inputs.length; i++) {
-        var validate = $('input[type="text"]')[i].validity;
+        var validate = inputs[i].validity;
         if (!validate.valid) {
           inputs[i].reportValidity();
           break;
         }
-        inputs[i].reportValidity();
       }
     }
     jqForm.attr('novalidate', 'novalidate');

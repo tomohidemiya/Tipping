@@ -6,28 +6,55 @@
 <script>
   var point = -1;
   $(function(){
+    // ありがとう♪ボタン押下時の挙動
     $("#giving").on('click',function(e){
-      // $('#exampleModal').modal();
+      $('#exampleModalLabel').text('感謝を送る前の確認♪');
+      $('#modal-body').html('下記の内容で送っても良いですか？( ´ ▽ ` )ﾉ <br> ・ 送る相手: ' + $('input[name="name"]').val() + '<br> ・ 送るポイント: ' + $('input[name="point"]').val()) + 'ポイント';
+      $("#modal-footer").css('display', 'block');
+      $('#exampleModal').modal();
+    });
+
+    // 確認画面で「送信」ボタンを押した時の挙動
+    $('#modal-btn-confirm').on('click', function(e) {
+      // 確認モーダルを消す
+      $('#exampleModal').modal('hide');
+
+      // スピナー開始＆ボタンを押せなくする
       $("#spinner").css('display', 'block');
       $("#spinner").addClass('show');
       $("#giving").attr('disabled', 'disabled');
+
+      // ポイントを一時退避
       point = $('input[name="point"]').val();
+
+      // 通信開始ー！！
       google.script.run.withSuccessHandler(update).withFailureHandler(error).doPost($('#form1')[0]);
     });
+
+    // 確認画面で「キャンセル」ボタンを押した時の挙動
+    $('#modal-btn-cancel').on('click', function(e) {
+      $('#exampleModal').modal('hide');
+    });
   });
+
+  // 通信がエラーになった時
   var error = function (response) {
-    // 表示ダイアログの表示
+    // エラーモーダルの表示
     $("#giving").attr('disabled', null);
     $("#spinner").css('display', 'none');
     $("#spinner").removeClass('show');
-    alert('データの送信に失敗しました。。\nインターネットの接続がいい場所で、もう一度お試しください！');
+    alert('途中で失敗しました。。\nインターネットの接続がいい場所で、もう一度お試しください！');
   }
+
+  // 通信が成功した時
   var update = function (response) {
     console.log(response);
     if (response.result === 'SUCCESS') {
-      $('#exampleModalLabel').text('送信しました（*^_^*）');
-      $('#modal-body').text('感謝！！！');
+      $('#exampleModalLabel').text('送りました(*^_^*)');
+      $('#modal-body').text('感謝、送りました(*^_^*)');
+      $("#modal-footer").css('display', 'none');
       $('#current-point').text(Number($('#current-point').text()) - point);
+      $('input[type="text"]').val('');
     } else {
       $('#exampleModalLabel').text('送信に失敗しました...(>_<)');
       if (response.hasOwnProperty('message')) {
@@ -35,11 +62,17 @@
       } else {
         $('#modal-body').text('不明なエラーが発生しました。。');
       }
+      $("#modal-footer").css('display', 'none');
     }
+
+    // ボタンのdisableを解除 & スピナーを消す
     $("#giving").attr('disabled', null);
     $("#spinner").css('display', 'none');
     $("#spinner").removeClass('show');
+
+    // モーダルをあげるぜ！
     $('#exampleModal').modal();
+
     point = -1
   }
 </script>
